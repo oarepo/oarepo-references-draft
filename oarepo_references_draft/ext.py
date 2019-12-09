@@ -8,41 +8,12 @@ from invenio_records_draft.signals import collect_records, check_can_publish, ch
     before_publish_record
 from oarepo_references.models import RecordReference
 from invenio_records_draft.proxies import current_drafts
-from invenio_records_draft.api import CollectAction, RecordContext
+from invenio_records_draft.api import CollectAction, RecordContext, find_endpoint_by_pid_type
 from oarepo_references.utils import transform_dicts_in_data
 
 
 def collect_referenced_records(sender, record: RecordContext = None, action=None):
-
-    if not getattr(record, 'record_url', None):
-        # add the external url of the record
-        if action == CollectAction.PUBLISH:
-            endpoint = find_endpoint_by_pid_type(current_drafts.draft_endpoints,
-                                                         record.record_pid.pid_type)
-        else:
-            endpoint = find_endpoint_by_pid_type(current_drafts.published_endpoints,
-                                                         record.record_pid.pid_type)
-        view_name = RecordResource.view_name.format(endpoint['endpoint'])
-        record.record_url = url_for(view_name, _external=True,
-                                    pid_value=record.record_pid.pid_value)
-
-    # add the external published and draft urls of the record
-    if action == CollectAction.PUBLISH:
-        record.draft_record_url = record.record_url
-        endpoint = find_endpoint_by_pid_type(current_drafts.published_endpoints,
-                                                     record.record_pid.pid_type)
-        view_name = RecordResource.view_name.format(endpoint['endpoint'])
-        record.published_record_url = url_for(view_name, _external=True,
-                                    pid_value=record.record_pid.pid_value)
-    else:
-        record.published_record_url = record.record_url
-
-        endpoint = find_endpoint_by_pid_type(current_drafts.draft_endpoints,
-                                                     record.record_pid.pid_type)
-        view_name = RecordResource.view_name.format(endpoint['endpoint'])
-        record.draft_record_url = url_for(view_name, _external=True,
-                                    pid_value=record.record_pid.pid_value)
-
+    # gather references inside the record (which point to draft or published record)
     for ref in RecordReference.query.filter_by(record_uuid=record.record.model.id):
         if not ref.reference_uuid:
             continue
@@ -57,13 +28,6 @@ def collect_referenced_records(sender, record: RecordContext = None, action=None
                                     record_pid=pid,
                                     record_url=ref.reference)
                 break
-
-
-def find_endpoint_by_pid_type(endpoints, pid_type):
-    for endpoint in endpoints.values():
-        if endpoint['pid_type'] == pid_type:
-            return endpoint
-    raise KeyError('Endpoint for pid type %s not found' % pid_type)
 
 
 def check_can_publish_callback(sender, record: RecordContext = None):
@@ -89,11 +53,14 @@ def check_can_edit_callback(sender, record: RecordContext = None):
 
 def before_publish_record_callback(sender, record: RecordContext = None, metadata=None,
                                    collected_records: List[RecordContext] = None):
-    # replace all references inside the metadata
+    # replace all references to known draft records with published records inside the metadata
     def replace_func(node):
         if isinstance(node, dict) and '$ref' in node:
             ref = node['$ref']
-            pass
+            for referenced_rec in collected_records:
+                if referenced_rec.record_url == ref:
+                    node['$ref'] = referenced_rec.published_record_url
+                    break
         return node
 
     transform_dicts_in_data(metadata, replace_func)
