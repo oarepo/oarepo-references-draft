@@ -24,9 +24,9 @@
 .. image:: https://img.shields.io/github/license/oarepo/oarepo-references-draft.svg
         :target: https://github.com/oarepo/oarepo-references-draft/blob/master/LICENSE
 
-OArepo module for tracking and updating references in Invenio records
+## Alpha version, do not use yet
 
-TODO: Please provide feature overview of module
+An extension of oarepo-references to work together with invenio-records-draft
 
 Further documentation is available on
 https://oarepo-references-draft.readthedocs.io/
