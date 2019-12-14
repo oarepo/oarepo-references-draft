@@ -38,6 +38,9 @@ setup(
         'invenio_search.mappings': [
             'records = records.mappings'
         ],
+        'invenio_records.jsonresolver': [
+            'sample = sample.jsonresolver'
+        ]
     },
     classifiers=[
         'Environment :: Web Environment',

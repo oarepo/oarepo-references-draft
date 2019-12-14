@@ -32,6 +32,10 @@ class PublishedRecord(DraftEnabledRecordMixin, Record):
         super().update(other, **kwargs)
         self['$schema'] = current_jsonschemas.path_to_url('records/record-v1.0.0.json')
 
+    @property
+    def canonical_url(self):
+        return 'http://localhost/api/records/%s' % self['id']
+
 
 class DraftRecord(DraftEnabledRecordMixin, Record):
     draft_validator = MarshmallowValidator(

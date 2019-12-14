@@ -18,7 +18,7 @@ def collect_referenced_records(sender, record: RecordContext = None, action=None
                                                         object_uuid=ref.reference_uuid):
             if (
                 (action == CollectAction.PUBLISH and current_drafts.is_draft(pid)) or
-                current_drafts.is_published(pid)
+                (action != CollectAction.PUBLISH and current_drafts.is_published(pid))
             ):
                 # this pid is the target pid
                 yield RecordContext(record=current_drafts.get_record(pid),

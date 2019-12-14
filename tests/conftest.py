@@ -65,12 +65,12 @@ def base_app():
         SQLALCHEMY_DATABASE_URI=os.environ.get(
             'SQLALCHEMY_DATABASE_URI',
             'sqlite:///:memory:'),
-        SERVER_NAME='localhost:5000',
+        SERVER_NAME='localhost',
         SECURITY_PASSWORD_SALT='TEST_SECURITY_PASSWORD_SALT',
         SECRET_KEY='TEST_SECRET_KEY',
         INVENIO_INSTANCE_PATH=instance_path,
         SEARCH_INDEX_PREFIX='test-',
-        JSONSCHEMAS_HOST='localhost:5000'
+        JSONSCHEMAS_HOST='localhost'
     )
     app.test_client_class = JsonClient
 
@@ -136,8 +136,10 @@ def client(app):
 def db(app):
     """Create database for the tests."""
     with app.app_context():
-        if not database_exists(str(_db.engine.url)) and \
-            app.config['SQLALCHEMY_DATABASE_URI'] != 'sqlite://':
+        if (
+            not database_exists(str(_db.engine.url)) and
+            app.config['SQLALCHEMY_DATABASE_URI'] != 'sqlite://'
+        ):
             create_database(_db.engine.url)
         _db.create_all()
 
@@ -161,8 +163,8 @@ def schemas(app):
         app.extensions['invenio-records-draft']._register_draft_mappings(app)
 
     return {
-        'published': 'https://localhost:5000/schemas/records/record-v1.0.0.json',
-        'draft': 'https://localhost:5000/schemas/draft/records/record-v1.0.0.json',
+        'published': 'https://localhost/schemas/records/record-v1.0.0.json',
+        'draft': 'https://localhost/schemas/draft/records/record-v1.0.0.json',
     }
 
 

@@ -56,6 +56,9 @@
         "ref": {
           "type": "object"
         },
+        "ref_pub": {
+          "type": "object"
+        },
         "_created": {
           "type": "date"
         },

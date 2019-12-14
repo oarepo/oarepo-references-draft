@@ -31,6 +31,7 @@ class MetadataSchemaV1(DraftValidationSchemaV1Mixin, DraftEnabledSchema, StrictK
     keywords = fields.List(SanitizedUnicode(), many=True)
     publication_date = DateString()
     ref = fields.Nested(Schema(), many=False)
+    ref_pub = fields.Nested(Schema(), many=False)
     schema = SanitizedUnicode(required=True, attribute='$schema',
                               load_from='$schema', dump_to='$schema')
 

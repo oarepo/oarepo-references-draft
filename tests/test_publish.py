@@ -1,79 +1,55 @@
 import uuid
 
-import pytest
-from invenio_pidstore.errors import PIDDoesNotExistError
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
-from invenio_records import Record
+from sample.records.config import DraftRecord, PublishedRecord
 
 from invenio_records_draft.api import RecordContext
 from invenio_records_draft.proxies import current_drafts
-from invenio_records_draft.record import (
-    DraftEnabledRecordMixin,
-    InvalidRecordException,
-    MarshmallowValidator,
-)
-from tests.helpers import disable_test_authenticated
 
 
-class TestDraftRecord(DraftEnabledRecordMixin, Record):
-    schema = None
-
-    def validate(self, **kwargs):
-        self['$schema'] = self.schema
-        return super().validate(**kwargs)
-
-    draft_validator = MarshmallowValidator(
-        'sample.records.marshmallow:MetadataSchemaV1',
-        'records/record-v1.0.0.json'
-    )
-
-
-class TestPublishedRecord(DraftEnabledRecordMixin, Record):
-    schema = None
-
-    def validate(self, **kwargs):
-        self['$schema'] = self.schema
-        return super().validate(**kwargs)
-
-
-def test_publish_record(app, db, schemas):
-    TestDraftRecord.schema = schemas['draft']
-    TestPublishedRecord.schema = schemas['published']
+def test_publish(app, db, schemas):
     with db.session.begin_nested():
         draft_uuid = uuid.uuid4()
 
-        rec = TestDraftRecord.create({
-            'id': '1'
+        rec1 = DraftRecord.create({
+            'id': '1',
+            'title': 'rec1'
         }, id_=draft_uuid)
-        draft_pid = PersistentIdentifier.create(
+        draft1_pid = PersistentIdentifier.create(
             pid_type='drecid', pid_value='1', status=PIDStatus.REGISTERED,
             object_type='rec', object_uuid=draft_uuid
         )
 
-        with pytest.raises(InvalidRecordException):
-            # title is required but not in rec, so should fail
-            with disable_test_authenticated():
-                current_drafts.publish(RecordContext(record=rec, record_pid=draft_pid))
+        published_uuid = uuid.uuid4()
+        published = PublishedRecord.create({
+            'id': '3',
+            'title': 'rec1a'
+        }, id_=published_uuid)
+        published_pid = PersistentIdentifier.create(
+            pid_type='recid', pid_value='3', status=PIDStatus.REGISTERED,
+            object_type='rec', object_uuid=published_uuid
+        )
 
-        with pytest.raises(PIDDoesNotExistError):
-            # no record should be created
-            PersistentIdentifier.get(pid_type='recid', pid_value='1')
+        draft2_uuid = uuid.uuid4()
+        rec2 = DraftRecord.create({
+            'id': '2',
+            'title': 'rec2',
+            'ref': {'$ref': 'http://localhost/drafts/records/1'},
+            'ref_pub': {'$ref': 'http://localhost/records/3'}
+        }, id_=draft2_uuid)
+        draft2_pid = PersistentIdentifier.create(
+            pid_type='drecid', pid_value='2', status=PIDStatus.REGISTERED,
+            object_type='rec', object_uuid=draft2_uuid
+        )
 
-        # make the record valid
-        rec['title'] = 'blah'
-        rec.commit()
+    current_drafts.publish(RecordContext(record=rec2, record_pid=draft2_pid))
 
-        # and publish it again
-        with disable_test_authenticated():
-            current_drafts.publish(RecordContext(record=rec, record_pid=draft_pid))
-
-        # draft should be gone
-        draft_pid = PersistentIdentifier.get(pid_type='drecid', pid_value='1')
-        assert draft_pid.status == PIDStatus.DELETED
-        rec = TestDraftRecord.get_record(draft_uuid, with_deleted=True)
-        assert rec.model.json is None
-
-        published_pid = PersistentIdentifier.get(pid_type='recid', pid_value='1')
-        assert published_pid.status == PIDStatus.REGISTERED
-        rec = TestPublishedRecord.get_record(published_pid.object_uuid)
-        assert rec.model.json is not None
+    published2_pid = PersistentIdentifier.get(pid_type='recid', pid_value=draft2_pid.pid_value)
+    pr = PublishedRecord.get_record(published2_pid.object_uuid)
+    assert pr.dumps() == {
+        '$schema': 'https://localhost/schemas/records/record-v1.0.0.json',
+        'id': '2',
+        'ref': {'$ref': 'http://localhost/records/1'},
+        'ref_pub': {'$ref': 'http://localhost/records/3'},
+        'title': 'rec2'
+    }
