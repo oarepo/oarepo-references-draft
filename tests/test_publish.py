@@ -1,13 +1,15 @@
 import uuid
 
+from invenio_indexer.api import RecordIndexer
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
+from invenio_search import current_search_client, current_search, RecordsSearch
 from sample.records.config import DraftRecord, PublishedRecord
 
 from invenio_records_draft.api import RecordContext
 from invenio_records_draft.proxies import current_drafts
 
 
-def test_publish(app, db, schemas):
+def test_publish(app, db, schemas, mappings, prepare_es):
     with db.session.begin_nested():
         draft_uuid = uuid.uuid4()
 
@@ -41,6 +43,12 @@ def test_publish(app, db, schemas):
             pid_type='drecid', pid_value='2', status=PIDStatus.REGISTERED,
             object_type='rec', object_uuid=draft2_uuid
         )
+        RecordIndexer().index(rec2)
+
+    current_search_client.indices.flush()
+
+    es_draft2 = RecordsSearch(index='draft-records-record-v1.0.0').get_record(draft2_pid.object_uuid).execute()
+    assert len(es_draft2.hits) == 1
 
     current_drafts.publish(RecordContext(record=rec2, record_pid=draft2_pid))
 
@@ -53,3 +61,20 @@ def test_publish(app, db, schemas):
         'ref_pub': {'$ref': 'http://localhost/records/3'},
         'title': 'rec2'
     }
+
+    current_search_client.indices.flush()
+
+    es_published2 = RecordsSearch(index='records-record-v1.0.0').get_record(published2_pid.object_uuid).execute()
+    assert len(es_published2.hits) == 1
+    es_published2 = es_published2.hits[0].to_dict()
+    es_published2.pop('_created')
+    es_published2.pop('_updated')
+    assert es_published2 == {
+        '$schema': 'https://localhost/schemas/records/record-v1.0.0.json',
+        'id': '2',
+        'ref': {'published': '1'},
+        'ref_pub': {'published': '3'},
+        'title': 'rec2'}
+
+    es_draft2 = RecordsSearch(index='draft-records-record-v1.0.0').get_record(draft2_pid.object_uuid).execute()
+    assert len(es_draft2.hits) == 0
