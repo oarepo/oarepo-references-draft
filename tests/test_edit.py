@@ -10,7 +10,7 @@ from invenio_records_draft.proxies import current_drafts
 from tests.helpers import disable_test_authenticated
 
 
-def test_unpublish(app, db, schemas, mappings, prepare_es):
+def test_edit(app, db, schemas, mappings, prepare_es):
     with disable_test_authenticated():
         with db.session.begin_nested():
             published_uuid1 = uuid.uuid4()
@@ -55,23 +55,31 @@ def test_unpublish(app, db, schemas, mappings, prepare_es):
             get_record(published_pid3.object_uuid).execute()
         assert len(es.hits) == 0
 
+        es = RecordsSearch(index='draft-records-record-v1.0.0'). \
+            get_record(published_pid2.object_uuid).execute()
+        assert len(es.hits) == 0
+
+        es = RecordsSearch(index='draft-records-record-v1.0.0'). \
+            get_record(published_pid1.object_uuid).execute()
+        assert len(es.hits) == 0
+
         es = RecordsSearch(index='records-record-v1.0.0'). \
             get_record(published_pid3.object_uuid).execute()
         assert len(es.hits) == 1
 
-        current_drafts.unpublish(RecordContext(record=published_rec3, record_pid=published_pid3))
+        current_drafts.edit(RecordContext(record=published_rec3, record_pid=published_pid3))
 
         assert PersistentIdentifier.get(
             pid_type='recid',
-            pid_value=published_pid3.pid_value).status == PIDStatus.DELETED
+            pid_value=published_pid3.pid_value).status == PIDStatus.REGISTERED
 
         assert PersistentIdentifier.get(
             pid_type='recid',
-            pid_value=published_pid2.pid_value).status == PIDStatus.DELETED
+            pid_value=published_pid2.pid_value).status == PIDStatus.REGISTERED
 
         assert PersistentIdentifier.get(
             pid_type='recid',
-            pid_value=published_pid1.pid_value).status == PIDStatus.DELETED
+            pid_value=published_pid1.pid_value).status == PIDStatus.REGISTERED
 
         draft_pid3 = PersistentIdentifier.get(pid_type='drecid',
                                               pid_value=published_pid3.pid_value)
@@ -124,7 +132,7 @@ def test_unpublish(app, db, schemas, mappings, prepare_es):
 
         es = RecordsSearch(index='records-record-v1.0.0'). \
             get_record(published_pid3.object_uuid).execute()
-        assert len(es.hits) == 0
+        assert len(es.hits) == 1
 
         es = RecordsSearch(index='draft-records-record-v1.0.0'). \
             get_record(draft_pid1.object_uuid).execute()
@@ -141,11 +149,7 @@ def test_unpublish(app, db, schemas, mappings, prepare_es):
 
         es = RecordsSearch(index='records-record-v1.0.0'). \
             get_record(published_pid1.object_uuid).execute()
-        assert len(es.hits) == 0
-
-        es = RecordsSearch(index='records-record-v1.0.0'). \
-            get_record(published_pid3.object_uuid).execute()
-        assert len(es.hits) == 0
+        assert len(es.hits) == 1
 
         es = RecordsSearch(index='draft-records-record-v1.0.0'). \
             get_record(draft_pid2.object_uuid).execute()
@@ -162,4 +166,4 @@ def test_unpublish(app, db, schemas, mappings, prepare_es):
 
         es = RecordsSearch(index='records-record-v1.0.0'). \
             get_record(published_pid2.object_uuid).execute()
-        assert len(es.hits) == 0
+        assert len(es.hits) == 1

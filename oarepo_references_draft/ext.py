@@ -4,7 +4,9 @@ from invenio_pidstore.models import PersistentIdentifier
 
 from invenio_records_draft.api import CollectAction, RecordContext
 from invenio_records_draft.proxies import current_drafts
-from invenio_records_draft.signals import collect_records, before_publish_record, before_unpublish_record
+from invenio_records_draft.signals import (
+    collect_records, before_publish_record, before_unpublish_record
+)
 from oarepo_references.models import RecordReference
 from oarepo_references.utils import transform_dicts_in_data
 
@@ -43,7 +45,8 @@ def before_publish_record_callback(sender, record: RecordContext = None, metadat
 
 
 def before_unpublish_record_callback(sender, record: RecordContext = None, metadata=None,
-                                   collected_records: List[RecordContext] = None):
+                                     collected_records: List[RecordContext] = None):
+
     # replace all references to known draft records with published records inside the metadata
     def replace_func(node):
         if isinstance(node, dict) and '$ref' in node:
