@@ -51,6 +51,10 @@ class DraftRecord(DraftEnabledRecordMixin, Record):
         super().update(other, **kwargs)
         self['$schema'] = current_jsonschemas.path_to_url('draft/records/record-v1.0.0.json')
 
+    @property
+    def canonical_url(self):
+        return 'http://localhost/api/drafts/records/%s' % self['id']
+
 
 DRAFT_ENABLED_RECORDS_REST_ENDPOINTS = {
     'records': {
