@@ -5,7 +5,7 @@
 # oarepo-references-draft is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
 
-"""OArepo module for tracking and updating references in Invenio records"""
+"""OArepo module for tracking and updating references in Invenio records."""
 
 import os
 
@@ -52,9 +52,9 @@ install_requires = [
     'oarepo-references>=1.4.3'
 ]
 
-packages = find_packages()
-
-
+packages = find_packages(exclude=['tests', 'sample', 'tests.*', 'sample.*'])
+print(">>>", __doc__)
+print(readme + '\n\n' + history)
 # Get the version string. Cannot be done with import!
 g = {}
 with open(os.path.join('oarepo_references_draft', 'version.py'), 'rt') as fp:

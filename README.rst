@@ -5,9 +5,9 @@
     modify it under the terms of the MIT License; see LICENSE file for more
     details.
 
-===================
+=========================
  oarepo-references-draft
-===================
+=========================
 
 .. image:: https://img.shields.io/travis/oarepo/oarepo-references-draft.svg
         :target: https://travis-ci.org/oarepo/oarepo-references-draft
