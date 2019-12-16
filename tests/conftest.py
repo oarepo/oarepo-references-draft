@@ -32,7 +32,6 @@ from invenio_search import InvenioSearch, current_search_client
 from invenio_search.cli import destroy, init
 from oarepo_references import OARepoReferences
 from oarepo_references.signals import after_reference_update
-
 from sample.records import Records
 from sqlalchemy_utils import create_database, database_exists
 from tests.helpers import set_identity
