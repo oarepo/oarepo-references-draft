@@ -53,8 +53,7 @@ install_requires = [
 ]
 
 packages = find_packages(exclude=['tests', 'sample', 'tests.*', 'sample.*'])
-print(">>>", __doc__)
-print(readme + '\n\n' + history)
+
 # Get the version string. Cannot be done with import!
 g = {}
 with open(os.path.join('oarepo_references_draft', 'version.py'), 'rt') as fp:
