@@ -31,6 +31,8 @@ from invenio_rest import InvenioREST
 from invenio_search import InvenioSearch, current_search_client
 from invenio_search.cli import destroy, init
 from oarepo_references import OARepoReferences
+from oarepo_references.signals import after_reference_update
+
 from sample.records import Records
 from sqlalchemy_utils import create_database, database_exists
 from tests.helpers import set_identity
@@ -267,3 +269,11 @@ def draft_record(app, db, schemas, mappings, prepare_es):
     current_search_client.indices.flush()
 
     return rec
+
+
+@after_reference_update.connect
+def sync_index(sender, references, ref_obj):
+    for ref in references:
+        record = Record.get_record(ref)
+        RecordIndexer().index(record)
+    return [references]
