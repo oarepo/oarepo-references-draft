@@ -9,18 +9,12 @@
 
 from __future__ import absolute_import, print_function
 
+from invenio_records_draft.marshmallow import DraftEnabledSchema, \
+    DraftValidationSchemaV1Mixin
 from invenio_records_rest.schemas import Nested, StrictKeysMixin
-from invenio_records_rest.schemas.fields import (
-    DateString,
-    PersistentIdentifier,
-    SanitizedUnicode,
-)
-from marshmallow import fields, missing, validate, Schema
-
-from invenio_records_draft.marshmallow import (
-    DraftEnabledSchema,
-    DraftValidationSchemaV1Mixin,
-)
+from invenio_records_rest.schemas.fields import DateString, \
+    PersistentIdentifier, SanitizedUnicode
+from marshmallow import Schema, fields, missing, validate
 
 
 class MetadataSchemaV1(DraftValidationSchemaV1Mixin, DraftEnabledSchema, StrictKeysMixin):

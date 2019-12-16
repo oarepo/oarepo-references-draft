@@ -2,11 +2,10 @@ import uuid
 
 from invenio_indexer.api import RecordIndexer
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
-from invenio_search import current_search_client, current_search, RecordsSearch
-from sample.records.config import DraftRecord, PublishedRecord
-
 from invenio_records_draft.api import RecordContext
 from invenio_records_draft.proxies import current_drafts
+from invenio_search import RecordsSearch, current_search, current_search_client
+from sample.records.config import DraftRecord, PublishedRecord
 from tests.helpers import disable_test_authenticated
 
 

@@ -5,9 +5,8 @@ import requests
 from flask import current_app
 from flask_principal import Identity, identity_changed
 from invenio_access import authenticated_user
-from invenio_records_rest.utils import allow_all
-
 from invenio_records_draft.proxies import current_drafts
+from invenio_records_rest.utils import allow_all
 
 
 def header_links(resp):

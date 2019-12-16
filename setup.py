@@ -27,6 +27,7 @@ tests_require = [
     'pytest-invenio>=1.0.5',
     'invenio[{db},base,metadata,elasticsearch6,auth,tests]=={version}'.format(
         db=DATABASE, version=INVENIO_VERSION),
+    'isort>=4.3.0'
 ]
 
 extras_require = {
@@ -47,8 +48,8 @@ setup_requires = [
 
 install_requires = [
     'Flask-BabelEx>=0.9.3',
-    'invenio-records-draft',
-    'oarepo-references'
+    'oarepo-invenio-records-draft>=3.0.0',
+    'oarepo-references>=1.4.3'
 ]
 
 packages = find_packages()

@@ -29,3 +29,9 @@ include .editorconfig
 include .tx/config
 prune docs/_build
 recursive-include oarepo_references_draft/translations *.po *.pot *.mo
+recursive-exclude sample * *.*
+exclude .envrc
+exclude LICENSE
+exclude .pytest-local.ini
+exclude sample
+exclude docs

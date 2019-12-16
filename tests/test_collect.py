@@ -1,10 +1,10 @@
 import uuid
 
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
-from sample.records.config import DraftRecord, PublishedRecord
-
 from invenio_records_draft.api import RecordContext
 from invenio_records_draft.signals import CollectAction
+from sample.records.config import DraftRecord, PublishedRecord
+
 from oarepo_references_draft.ext import collect_referenced_records
 
 

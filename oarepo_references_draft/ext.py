@@ -1,12 +1,10 @@
 from typing import List
 
 from invenio_pidstore.models import PersistentIdentifier
-
 from invenio_records_draft.api import CollectAction, RecordContext
 from invenio_records_draft.proxies import current_drafts
-from invenio_records_draft.signals import (
-    collect_records, before_publish_record, before_unpublish_record
-)
+from invenio_records_draft.signals import before_publish_record, \
+    before_unpublish_record, collect_records
 from oarepo_references.models import RecordReference
 from oarepo_references.utils import transform_dicts_in_data
 

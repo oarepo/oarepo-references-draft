@@ -22,20 +22,20 @@ from invenio_pidstore import InvenioPIDStore
 from invenio_pidstore.minters import recid_minter
 from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_records import InvenioRecords, Record
+from invenio_records_draft.cli import make_mappings, make_schemas
+from invenio_records_draft.ext import InvenioRecordsDraft
 from invenio_records_rest import InvenioRecordsREST
 from invenio_records_rest.utils import PIDConverter
 from invenio_records_rest.views import create_blueprint_from_app
 from invenio_rest import InvenioREST
 from invenio_search import InvenioSearch, current_search_client
 from invenio_search.cli import destroy, init
-from sqlalchemy_utils import create_database, database_exists
-
-from invenio_records_draft.cli import make_mappings, make_schemas
-from invenio_records_draft.ext import InvenioRecordsDraft
 from oarepo_references import OARepoReferences
-from oarepo_references_draft.ext import OARepoReferencesDraft
 from sample.records import Records
+from sqlalchemy_utils import create_database, database_exists
 from tests.helpers import set_identity
+
+from oarepo_references_draft.ext import OARepoReferencesDraft
 
 
 class JsonClient(FlaskClient):
