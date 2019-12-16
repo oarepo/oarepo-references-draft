@@ -31,6 +31,7 @@ prune docs/_build
 recursive-include oarepo_references_draft/translations *.po *.pot *.mo
 recursive-exclude sample * *.*
 recursive-exclude docs * *.*
+recursive-exclude tests * *.*
 exclude .envrc
 exclude LICENSE
 exclude .pytest-local.ini
