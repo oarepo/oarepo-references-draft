@@ -14,7 +14,7 @@ from setuptools import find_packages, setup
 readme = open('README.rst').read()
 history = open('CHANGES.rst').read()
 
-OAREPO_VERSION = os.environ.get('OAREPO_VERSION', '3.1.1')
+OAREPO_VERSION = os.environ.get('OAREPO_VERSION', '3.1.1.10')
 
 tests_require = [
     'check-manifest>=0.25',
@@ -24,7 +24,7 @@ tests_require = [
     'pytest-cov>=2.5.1',
     'pytest-pep8>=1.0.6',
     'pytest-invenio>=1.0.5',
-    'oarepo[deploy,tests]=={version}'.format(
+    'oarepo[deploy,tests]~={version}'.format(
         version=OAREPO_VERSION),
     'isort>=4.3.0'
 ]
