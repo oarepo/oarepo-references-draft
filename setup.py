@@ -14,8 +14,7 @@ from setuptools import find_packages, setup
 readme = open('README.rst').read()
 history = open('CHANGES.rst').read()
 
-DATABASE = "postgresql"
-INVENIO_VERSION = "3.1.1"
+OAREPO_VERSION = os.environ.get('OAREPO_VERSION', '3.1.1')
 
 tests_require = [
     'check-manifest>=0.25',
@@ -25,8 +24,8 @@ tests_require = [
     'pytest-cov>=2.5.1',
     'pytest-pep8>=1.0.6',
     'pytest-invenio>=1.0.5',
-    'invenio[{db},base,metadata,elasticsearch6,auth,tests]=={version}'.format(
-        db=DATABASE, version=INVENIO_VERSION),
+    'oarepo[deploy,tests]=={version}'.format(
+        version=OAREPO_VERSION),
     'isort>=4.3.0'
 ]
 
@@ -58,7 +57,7 @@ packages = find_packages(exclude=['tests', 'sample', 'tests.*', 'sample.*'])
 g = {}
 with open(os.path.join('oarepo_references_draft', 'version.py'), 'rt') as fp:
     exec(fp.read(), g)
-    version = g['__version__']
+version = g['__version__']
 
 setup(
     name='oarepo-references-draft',
