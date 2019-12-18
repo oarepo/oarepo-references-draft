@@ -26,12 +26,14 @@ env:
     - ES6_DOWNLOAD_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.2.0.tar.gz"
     - ES_HOST=127.0.0.1
   matrix:
-    - REQUIREMENTS=release EXTRAS=all,postgresql,tests SQLALCHEMY_DATABASE_URI=$POSTGRESQL_SQLALCHEMY_DATABASE_URI
-    - REQUIREMENTS=release EXTRAS=all,sqlite,tests
+    - REQUIREMENTS=release OAREPO_VERSION=3.1.1 EXTRAS=all,postgresql,tests SQLALCHEMY_DATABASE_URI=$POSTGRESQL_SQLALCHEMY_DATABASE_URI
+    - REQUIREMENTS=release OAREPO_VERSION=3.1.1 EXTRAS=all,sqlite,tests
+    - REQUIREMENTS=release OAREPO_VERSION=3.2.0a9 EXTRAS=all,postgresql,tests SQLALCHEMY_DATABASE_URI=$POSTGRESQL_SQLALCHEMY_DATABASE_URI
+    - REQUIREMENTS=release OAREPO_VERSION=3.2.0a9 EXTRAS=all,sqlite,tests
 
 python:
-  - "3.6"
   - "3.7"
+  - "3.8"
 
 before_install:
   - "travis_retry pip install --upgrade pip setuptools py"
