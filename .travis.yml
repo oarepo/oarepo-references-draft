@@ -35,7 +35,7 @@ env:
 
 python:
   - "3.7"
-#  - "3.8"
+  - "3.8"
 
 before_install:
   - "travis_retry pip install --upgrade pip setuptools py"
