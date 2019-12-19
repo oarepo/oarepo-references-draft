@@ -11,6 +11,7 @@ from __future__ import absolute_import, print_function
 
 from invenio_records_draft.marshmallow import DraftEnabledSchema, \
     DraftValidationSchemaV1Mixin
+from invenio_records_draft.utils import load_dump
 from invenio_records_rest.schemas import Nested, StrictKeysMixin
 from invenio_records_rest.schemas.fields import DateString, \
     PersistentIdentifier, SanitizedUnicode
@@ -24,10 +25,10 @@ class MetadataSchemaV1(DraftValidationSchemaV1Mixin, DraftEnabledSchema, StrictK
     title = SanitizedUnicode(required=True, validate=validate.Length(min=1, max=10))
     keywords = fields.List(SanitizedUnicode(), many=True)
     publication_date = DateString()
-    ref = fields.Nested(Schema(), many=False)
-    ref_pub = fields.Nested(Schema(), many=False)
+    ref = fields.Raw(many=False)
+    ref_pub = fields.Raw(many=False)
     schema = SanitizedUnicode(required=True, attribute='$schema',
-                              load_from='$schema', dump_to='$schema')
+                              **load_dump('$schema'))
 
 
 class RecordSchemaV1(DraftEnabledSchema, StrictKeysMixin):
