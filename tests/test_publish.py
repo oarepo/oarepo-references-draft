@@ -46,6 +46,7 @@ def test_publish(app, db, schemas, mappings, prepare_es):
             )
             RecordIndexer().index(rec2)
 
+        current_search_client.indices.refresh()
         current_search_client.indices.flush()
 
         es_draft2 = RecordsSearch(index='draft-records-record-v1.0.0').\
@@ -64,6 +65,7 @@ def test_publish(app, db, schemas, mappings, prepare_es):
             'title': 'rec2'
         }
 
+        current_search_client.indices.refresh()
         current_search_client.indices.flush()
 
         es_published2 = RecordsSearch(index='records-record-v1.0.0').\

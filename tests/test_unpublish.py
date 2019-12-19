@@ -48,6 +48,7 @@ def test_unpublish(app, db, schemas, mappings, prepare_es):
             RecordIndexer().index(published_rec2)
             RecordIndexer().index(published_rec3)
 
+        current_search_client.indices.refresh()
         current_search_client.indices.flush()
 
         es = RecordsSearch(index='draft-records-record-v1.0.0'). \
@@ -104,6 +105,7 @@ def test_unpublish(app, db, schemas, mappings, prepare_es):
             'title': 'rec1'
         }
 
+        current_search_client.indices.refresh()
         current_search_client.indices.flush()
 
         es = RecordsSearch(index='draft-records-record-v1.0.0'). \

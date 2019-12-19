@@ -245,6 +245,7 @@ def published_record(app, db, schemas, mappings, prepare_es):
     recid_minter(record_uuid, data)
     rec = Record.create(data, id_=record_uuid)
     RecordIndexer().index(rec)
+    current_search_client.indices.refresh()
     current_search_client.indices.flush()
 
     return rec
@@ -266,6 +267,7 @@ def draft_record(app, db, schemas, mappings, prepare_es):
     rec = Record.create(data, id_=draft_uuid)
 
     RecordIndexer().index(rec)
+    current_search_client.indices.refresh()
     current_search_client.indices.flush()
 
     return rec
