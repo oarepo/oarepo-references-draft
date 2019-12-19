@@ -24,6 +24,7 @@ from invenio_pidstore.models import PersistentIdentifier, PIDStatus
 from invenio_records import InvenioRecords, Record
 from invenio_records_draft.cli import make_mappings, make_schemas
 from invenio_records_draft.ext import InvenioRecordsDraft
+from invenio_records_draft.utils import build_index_name
 from invenio_records_rest import InvenioRecordsREST
 from invenio_records_rest.utils import PIDConverter
 from invenio_records_rest.views import create_blueprint_from_app
@@ -229,8 +230,8 @@ def prepare_es(app, db):
     assert result.exit_code == 0
     aliases = current_search_client.indices.get_alias("*")
 
-    assert 'test-records-record-v1.0.0' in aliases
-    assert 'test-draft-records-record-v1.0.0' in aliases
+    assert build_index_name('records-record-v1.0.0') in aliases
+    assert build_index_name('draft-records-record-v1.0.0') in aliases
 
 
 @pytest.fixture()
@@ -244,6 +245,7 @@ def published_record(app, db, schemas, mappings, prepare_es):
     recid_minter(record_uuid, data)
     rec = Record.create(data, id_=record_uuid)
     RecordIndexer().index(rec)
+    current_search_client.indices.refresh()
     current_search_client.indices.flush()
 
     return rec
@@ -265,6 +267,7 @@ def draft_record(app, db, schemas, mappings, prepare_es):
     rec = Record.create(data, id_=draft_uuid)
 
     RecordIndexer().index(rec)
+    current_search_client.indices.refresh()
     current_search_client.indices.flush()
 
     return rec
